@@ -3,44 +3,11 @@ name: 'Deploy workflow'
 on: [push]
 
 jobs:
-  Build-Linux-Ubuntu:
-    name: 'Build-Linux-Ubuntu'
-    runs-on: ubuntu-latest
 
-    env:
-      QT_VERSION: 5.15.2
-      QIF_VERSION: 4.5
 
-    steps:
-    - name: 'Install Qt'
-      uses: jurplel/install-qt-action@v3
-      with:
-        version: ${{ env.QT_VERSION }}
-        host: 'linux'
-        target: 'desktop'
-        arch: 'gcc_64'
-        dir: ${{ runner.temp }}
-        setup-python: 'true'
-        tools: 'tools_ifw'
-        set-env: 'true'
-        extra: '--external 7z'
 
-    - name: 'Get sources'
-      uses: actions/checkout@v3
-      with:
-        submodules: 'true'
-        fetch-depth: 10
 
-    - name: 'Setup ccache'
-      uses: hendrikmuhs/ccache-action@v1.2
 
-    - name: 'Build project'
-      run: |
-        export QT_BIN_DIR=${{ runner.temp }}/Qt/${{ env.QT_VERSION }}/gcc_64/bin
-        export QIF_BIN_DIR=${{ runner.temp }}/Qt/Tools/QtInstallerFramework/${{ env.QIF_VERSION }}/bin
-        bash deploy/build_linux.sh
-
-# ------------------------------------------------------
 
   Build-Windows:
     name: Build-Windows
@@ -105,101 +72,8 @@ jobs:
         set QIF_BIN_DIR="${{ runner.temp }}\\Qt\\Tools\\QtInstallerFramework\\${{ env.QIF_VERSION }}\\bin"
         call deploy\\build_windows.bat
 
-# ------------------------------------------------------
 
-  Build-IOS:
-    name: 'Build-IOS'
-    runs-on: macos-latest
 
-    env:
-      QT_VERSION: 5.15.2
-      QIF_VERSION: 4.4
-
-    steps:
-    - name: 'Setup xcode'
-      uses: maxim-lobanov/setup-xcode@v1
-      with:
-        xcode-version: '13.4'
-
-    - name: 'Install Qt'
-      uses: jurplel/install-qt-action@v3
-      with:
-        version: ${{ env.QT_VERSION }}
-        host: 'mac'
-        target: 'ios'
-        dir: ${{ runner.temp }}
-        setup-python: 'true'
-        set-env: 'true'
-        extra: '--external 7z'
-
-    - name: 'Install go'
-      uses: actions/setup-go@v3
-
-    - name: 'Setup gomobile'
-      run: |
-          export PATH=$PATH:~/go/bin
-          go install golang.org/x/mobile/cmd/gomobile@latest
-          gomobile init
-
-    - name: 'Get sources'
-      uses: actions/checkout@v3
-      with:
-        submodules: 'true'
-        fetch-depth: 10
-
-    - name: 'Setup ccache'
-      uses: hendrikmuhs/ccache-action@v1.2
-
-    - name: 'Build project'
-      run: |
-        export QT_BIN_DIR="${{ runner.temp }}/Qt/${{ env.QT_VERSION }}/ios/bin"
-        export QT_IOS_BIN=$QT_BIN_DIR
-        export PATH=$PATH:~/go/bin
-        bash deploy/build_ios.sh
-
-# ------------------------------------------------------
-
-  Build-MacOS:
-    name: 'Build-MacOS'
-    runs-on: macos-latest
-
-    env:
-      QT_VERSION: 5.15.2
-      QIF_VERSION: 4.5
-
-    steps:
-    - name: 'Setup xcode'
-      uses: maxim-lobanov/setup-xcode@v1
-      with:
-        xcode-version: '13.4'
-
-    - name: 'Install Qt'
-      uses: jurplel/install-qt-action@v3
-      with:
-        version: ${{ env.QT_VERSION }}
-        host: 'mac'
-        target: 'desktop'
-        arch: 'clang_64'
-        dir: ${{ runner.temp }}
-        setup-python: 'true'
-        tools: 'tools_ifw'
-        set-env: 'true'
-        extra: '--external 7z'
-
-    - name: 'Get sources'
-      uses: actions/checkout@v3
-      with:
-        submodules: 'true'
-        fetch-depth: 10
-
-    - name: 'Setup ccache'
-      uses: hendrikmuhs/ccache-action@v1.2
-
-    - name: 'Build project'
-      run: |
-        export QT_BIN_DIR="${{ runner.temp }}/Qt/${{ env.QT_VERSION }}/clang_64/bin"
-        export QIF_BIN_DIR="${{ runner.temp }}/Qt/Tools/QtInstallerFramework/${{ env.QIF_VERSION }}/bin"
-        bash deploy/build_macos.sh
 
 # ------------------------------------------------------
 
